@@ -1,0 +1,38 @@
+name: Train Model CI (Conda)
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-activate-base: true
+          python-version: "3.12"
+          miniforge-variant: Miniforge3
+          use-mamba: true
+
+      - name: Install MLflow
+        shell: bash -l {0}
+        run: |
+          pip install mlflow==2.19.0
+
+      - name: Verify mlflow
+        shell: bash -l {0}
+        run: |
+          which mlflow
+          mlflow --version
+
+      - name: Run MLflow Project
+        shell: bash -l {0}
+        run: |
+          mlflow run MLProject --env-manager=conda
